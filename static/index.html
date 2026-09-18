@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>GridWise Control Room</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="GridWise home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span><strong>GRIDWISE</strong><small>ENERGY CONTROL</small></span>
+    </a>
+    <div class="system-status">
+      <span id="statusDot" class="status-dot"></span>
+      <span id="systemStatus">Checking system</span>
+      <span class="divider"></span>
+      <span id="modelName">Model</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">BUP CSE FEST 2026 / PRELIMINARY</p>
+        <h1>Turn operator intent into an <em>optimal energy plan.</em></h1>
+        <p class="lede">Interpret natural-language constraints, validate every directive, and schedule grid, solar, and battery energy across 24 hours.</p>
+      </div>
+      <div class="pipeline" aria-label="Application pipeline">
+        <span>01 <b>Interpret</b></span><i></i><span>02 <b>Guardrail</b></span><i></i><span>03 <b>Optimize</b></span><i></i><span>04 <b>Verify</b></span>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel setup-panel">
+        <div class="panel-heading">
+          <div><span class="kicker">INPUT</span><h2>Scenario setup</h2></div>
+          <button id="resetButton" class="text-button" type="button">Reset</button>
+        </div>
+
+        <label for="sampleSelect">Public sample</label>
+        <div class="select-wrap">
+          <select id="sampleSelect"><option value="">Loading cases…</option></select>
+        </div>
+
+        <label for="scenarioJson">Scenario JSON</label>
+        <div class="editor-shell">
+          <div class="line-rail" aria-hidden="true">01<br>02<br>03<br>04<br>05<br>06<br>07<br>08<br>09<br>10<br>11<br>12</div>
+          <textarea id="scenarioJson" spellcheck="false" aria-label="Scenario JSON editor"></textarea>
+        </div>
+        <p id="inputHint" class="hint">Choose a public case or paste a valid scenario.</p>
+
+        <button id="optimizeButton" class="primary-button" type="button">
+          <span>Generate optimal plan</span><b aria-hidden="true">→</b>
+        </button>
+      </aside>
+
+      <section class="results-column">
+        <div id="emptyState" class="panel empty-state">
+          <div class="orb"><span></span></div>
+          <h2>Ready to optimize</h2>
+          <p>Select a public case and generate a plan. The result will appear here with directives, totals, and an hour-by-hour schedule.</p>
+        </div>
+
+        <div id="results" class="results hidden">
+          <div class="metric-grid">
+            <article class="metric cost"><span>Total cost</span><strong id="totalCost">—</strong><small>BDT / day</small></article>
+            <article class="metric"><span>Grid energy</span><strong id="totalGrid">—</strong><small>kWh total</small></article>
+            <article class="metric"><span>Peak grid</span><strong id="peakGrid">—</strong><small>kWh / hour</small></article>
+            <article class="metric"><span>Directives</span><strong id="directiveCount">—</strong><small>applied</small></article>
+          </div>
+
+          <article class="panel chart-panel">
+            <div class="panel-heading">
+              <div><span class="kicker">24-HOUR PLAN</span><h2>Energy flow</h2></div>
+              <div class="legend"><span class="grid-key">Grid</span><span class="solar-key">Solar</span><span class="battery-key">Battery</span></div>
+            </div>
+            <div id="energyChart" class="chart" role="img" aria-label="Hourly energy plan chart"></div>
+          </article>
+
+          <div class="lower-grid">
+            <article class="panel directives-panel">
+              <div class="panel-heading"><div><span class="kicker">LLM OUTPUT</span><h2>Directive interpretation</h2></div></div>
+              <div id="directives"></div>
+            </article>
+            <article class="panel summary-panel">
+              <div class="panel-heading"><div><span class="kicker">STRATEGY</span><h2>Plan summary</h2></div></div>
+              <p id="planSummary"></p>
+              <button id="downloadButton" class="secondary-button" type="button">Download response JSON</button>
+            </article>
+          </div>
+
+          <article class="panel table-panel">
+            <div class="panel-heading"><div><span class="kicker">VERIFIED OUTPUT</span><h2>Hourly schedule</h2></div></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Hour</th><th>Grid</th><th>Solar</th><th>Action</th><th>Battery Δ</th><th>State after</th></tr></thead>
+                <tbody id="scheduleBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
