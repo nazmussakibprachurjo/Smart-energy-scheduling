@@ -80,6 +80,9 @@ def optimize_energy(request: OptimizeRequest) -> OptimizeResponse:
     except OptimizationError as exc:
         log.warning("Optimization failed: %s", exc)
         raise HTTPException(status_code=422, detail="The interpreted scenario is infeasible") from None
+    except RuntimeError as exc:
+        log.warning("LLM provider failure: %s", exc)
+        raise HTTPException(status_code=502, detail=str(exc)) from None
     except HTTPException:
         raise
     except Exception as exc:
