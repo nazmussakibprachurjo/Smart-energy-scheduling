@@ -75,7 +75,7 @@ def _interpret_gemini(request: OptimizeRequest) -> LLMResult:
         "contents": [{"role": "user", "parts": [{"text": json.dumps(_input_payload(request), separators=(",", ":"))}]}],
         "generationConfig": {
             "responseMimeType": "application/json",
-            "responseJsonSchema": LLMResult.model_json_schema(),
+            "responseJsonSchema": _gemini_schema(),
             "temperature": 0,
             "maxOutputTokens": 2048,
         },
