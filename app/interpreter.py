@@ -84,7 +84,12 @@ def _interpret_gemini(request: OptimizeRequest) -> LLMResult:
         response = client.post(url, headers={"x-goog-api-key": api_key}, json=body)
     if response.status_code == 429:
         raise RuntimeError("Gemini free-tier rate limit exceeded")
-    response.raise_for_status()
+    if response.status_code >= 400:
+        try:
+            message = response.json().get("error", {}).get("message", "request rejected")
+        except (ValueError, AttributeError):
+            message = "request rejected"
+        raise RuntimeError(f"Gemini API error {response.status_code}: {message[:300]}")
     data = response.json()
     try:
         text = data["candidates"][0]["content"]["parts"][0]["text"]
@@ -98,3 +103,21 @@ def _input_payload(request: OptimizeRequest) -> dict:
         "operator_notes": request.operator_notes,
         "battery_capacity_kwh": request.battery.capacity_kwh,
     }
+
+
+def _gemini_schema() -> dict:
+    """Remove JSON Schema keywords that Gemini structured output does not support."""
+    schema = LLMResult.model_json_schema()
+
+    def clean(value):
+        if isinstance(value, dict):
+            return {
+                key: clean(item)
+                for key, item in value.items()
+                if key not in {"minLength", "maxLength"}
+            }
+        if isinstance(value, list):
+            return [clean(item) for item in value]
+        return value
+
+    return clean(schema)
